@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import './routes/photo.dart';
+import './routes/contact.dart';
 void main() {
   // runApp(const MyApp());
   runApp(MaterialApp(
     title: 'test flutter',
     routes: {
-      "page_photo": (context) =>  const PermissionDemo()
+      "page_photo": (context) =>  const PermissionPhoto(),
+      "page_contact": (context) =>  const FlutterContactsExample()
     },
     home: Scaffold(
       appBar: AppBar(title: const Text('FlutterDemo')),
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
                 ElevatedButton(
                   style: style,
                   onPressed: () {
-
+                    Navigator.pushNamed(context, "page_contact");
                   },
                   child: const Text('获取通讯录'),
                 ),

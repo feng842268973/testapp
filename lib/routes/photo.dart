@@ -5,16 +5,16 @@ import 'package:photo_manager/photo_manager.dart';
 
 
 
-class PermissionDemo extends StatefulWidget {
-  const PermissionDemo({Key ? key}) : super(key: key);
+class PermissionPhoto extends StatefulWidget {
+  const PermissionPhoto({Key ? key}) : super(key: key);
 
   @override
-  _PermissionDemoState createState() {
-    return _PermissionDemoState();
+  _PermissionPhotoState createState() {
+    return _PermissionPhotoState();
   }
 }
 
-class _PermissionDemoState extends State<PermissionDemo> {
+class _PermissionPhotoState extends State<PermissionPhoto> {
   List imgList = [];
   @override
   void initState () {
