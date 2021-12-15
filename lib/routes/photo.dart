@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 
@@ -16,21 +15,30 @@ class PermissionDemo extends StatefulWidget {
 }
 
 class _PermissionDemoState extends State<PermissionDemo> {
+  List imgList = [];
   @override
   void initState () {
     
-    var image = getAlbum();
+    getAlbum();
     
-    print(image);
-    print(111111);
     super.initState();
   }
 
   getAlbum() async {
     var result = await PhotoManager.requestPermissionExtend();
+
     if (result.isAuth) {
         // success
-        
+        List<AssetPathEntity> list = await PhotoManager.getAssetPathList(type: RequestType.image);
+        final assetList = await list[0].getAssetListRange(start: 0, end: 88);
+        List arr = [];
+        for(var i=0; i<assetList.length; i++) {
+          var imgFile = await assetList[i].file;
+          arr.add(imgFile);
+        }
+        setState(() {
+          imgList = arr;
+        });
     } else {
         // fail
         /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
@@ -84,25 +92,25 @@ class _PermissionDemoState extends State<PermissionDemo> {
     print('存储权限：${statuses[Permission.storage]}');
 
   }
-  
+  List<Container> _buildGridTileList(List imgList) => List.generate (
+    imgList.length, (i)  => Container (child: Image.file( imgList[i], fit: BoxFit.cover)));
+
   @override
   
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
           appBar: AppBar(title: const Text('FlutterDemo')),
-          body: Center(
-            child: Column(
-              children: <Widget>[
-                OutlinedButton(onPressed: () {
-                  checkPermission();
-                }, child: const Text('申请权限存储权限')),
-                OutlinedButton(onPressed: () {
-                  checkPermission2();
-                }, child: const Text('多权限申请'))
-              ],
-            ),
-          )
-        ));
+          body: FutureBuilder(
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            return GridView.extent(
+                  maxCrossAxisExtent: 150,
+                  padding: const EdgeInsets.all(4),
+                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4,
+                  children: _buildGridTileList(imgList));
+          }
+        ))
+        );
   }
 }
