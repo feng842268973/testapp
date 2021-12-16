@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import './routes/photo.dart';
 import './routes/contact.dart';
+import './routes/socket.dart';
+
 void main() {
   // runApp(const MyApp());
   runApp(MaterialApp(
     title: 'test flutter',
     routes: {
       "page_photo": (context) =>  const PermissionPhoto(),
-      "page_contact": (context) =>  const FlutterContactsExample()
+      "page_contact": (context) =>  const FlutterContactsExample(),
+      "page_socket": (context) =>  const SocketPage()
     },
     home: Scaffold(
       appBar: AppBar(title: const Text('FlutterDemo')),
@@ -18,7 +21,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key ? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style =
@@ -41,6 +44,14 @@ class MyApp extends StatelessWidget {
                     Navigator.pushNamed(context, "page_contact");
                   },
                   child: const Text('获取通讯录'),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  style: style,
+                  onPressed: () {
+                    Navigator.pushNamed(context, "page_socket");
+                  },
+                  child: const Text('socket'),
                 ),
               ],
             )

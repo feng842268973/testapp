@@ -2,7 +2,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
-
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 
 class PermissionPhoto extends StatefulWidget {
@@ -33,6 +33,8 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
         final assetList = await list[0].getAssetListRange(start: 0, end: 88);
         List arr = [];
         for(var i=0; i<assetList.length; i++) {
+          print(assetList[i]);
+          print(11111111);
           var imgFile = await assetList[i].file;
           arr.add(imgFile);
         }
