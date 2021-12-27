@@ -1,10 +1,9 @@
+
 import 'package:flutter/material.dart';
-
-
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 // 引入Socket.io
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:socket_io_client/socket_io_client.dart';
-
 class SocketPage extends StatefulWidget {
     const SocketPage({Key ? key}) : super(key: key);
     @override
@@ -14,24 +13,22 @@ class SocketPage extends StatefulWidget {
 class _SocketPageState extends State<SocketPage> {
 
     final ScrollController _scrollController = ScrollController();
-    late IO.Socket socket;
     List messageList=[];
 
     @override
     void initState() {
         print(111);
         super.initState();
-      //   IO.Socket socket = IO.io('http://localhost:3000',
-      //   OptionBuilder()
-      // .setTransports(['websocket']).setExtraHeaders({'foo': 'bar'}) // optional
-      // .build());
-      //   socket.onConnect((_) {
-      //     print('connect');
-      //     socket.emit('msg', 'test');
-      //   });
-      //   socket.on('event', (data) => print(data));
-      //   socket.onDisconnect((_) => print('disconnect'));
-      //   socket.on('fromServer', (_) => print(_));
+        var channel = IOWebSocketChannel.connect(Uri.parse('ws://192.168.101.69:8000'));
+
+        channel.stream.listen((message) {
+          print(message);
+          print('---------');
+          channel.sink.add('received!');
+          channel.sink.close(status.goingAway);
+        });
+
+
     }
 
 
@@ -40,16 +37,6 @@ class _SocketPageState extends State<SocketPage> {
         return Scaffold(
             appBar: AppBar(
                 title: Text("Socket.io演示"),
-            ),
-            floatingActionButton: FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: (){
-                    // 发送数据到服务端
-                    socket.emit('toServer',{
-                        "username":'aiguangyuan',
-                        "age":18
-                    });
-                },
             ),
             body: ListView.builder(
                 // 滚动控制器

@@ -14,7 +14,8 @@ void main() {
     },
     home: Scaffold(
       appBar: AppBar(title: const Text('FlutterDemo')),
-        body: const MyApp()
+      body: const MyApp(),
+      bottomNavigationBar: const MyStatefulWidget()
     )
   ));
 }
@@ -35,27 +36,76 @@ class MyApp extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, "page_photo");
                   },
-                  child: const Text('获取相册'),
+                  child: const Text('去主页'),
                 ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: style,
-                  onPressed: () {
-                    Navigator.pushNamed(context, "page_contact");
-                  },
-                  child: const Text('获取通讯录'),
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: style,
-                  onPressed: () {
-                    Navigator.pushNamed(context, "page_socket");
-                  },
-                  child: const Text('socket'),
-                ),
+                // const SizedBox(height: 30),
+                // ElevatedButton(
+                //   style: style,
+                //   onPressed: () {
+                //     Navigator.pushNamed(context, "page_contact");
+                //   },
+                //   child: const Text('获取通讯录'),
+                // ),
+                // const SizedBox(height: 30),
+                // ElevatedButton(
+                //   style: style,
+                //   onPressed: () {
+                //     Navigator.pushNamed(context, "page_socket");
+                //   },
+                //   child: const Text('socket'),
+                // ),
               ],
             )
           );
 
+  }
+}
+
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({ Key? key }) : super(key: key);
+
+  @override
+  _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  final List _widgetOptions = [
+    'page_photo','page_contact','page_socket'
+    // const PermissionPhoto(),
+    // const FlutterContactsExample(),
+    // const SocketPage()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      Navigator.pushNamed(context, _widgetOptions[index]);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Business',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'School',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      );
   }
 }

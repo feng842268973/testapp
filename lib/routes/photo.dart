@@ -1,8 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 
 class PermissionPhoto extends StatefulWidget {
@@ -23,24 +23,36 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
     
     super.initState();
   }
-
+   
   getAlbum() async {
     var result = await PhotoManager.requestPermissionExtend();
 
     if (result.isAuth) {
         // success
         List<AssetPathEntity> list = await PhotoManager.getAssetPathList(type: RequestType.image);
-        final assetList = await list[0].getAssetListRange(start: 0, end: 88);
+        final assetList = await list[0].getAssetListRange(start: 0, end: 8);
         List arr = [];
+        List arr2 = [];
         for(var i=0; i<assetList.length; i++) {
-          print(assetList[i]);
-          print(11111111);
           var imgFile = await assetList[i].file;
+          // var thumbBytes  = await assetList[i].thumbData;
           arr.add(imgFile);
+          // arr2.add(thumbBytes);
         }
+        print(arr);
+        print('--------');
+          FormData formData = FormData.fromMap({
+            "files": arr
+          });
+          print(formData);
+        print('======');
+        Dio dio = Dio();
         setState(() {
           imgList = arr;
         });
+        var response = await dio.post('http://192.168.101.69:3000/photo', data:formData);
+        
+
     } else {
         // fail
         /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
