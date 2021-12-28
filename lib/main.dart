@@ -5,18 +5,14 @@ import './routes/socket.dart';
 
 void main() {
   // runApp(const MyApp());
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     title: 'test flutter',
     routes: {
-      "page_photo": (context) =>  const PermissionPhoto(),
-      "page_contact": (context) =>  const FlutterContactsExample(),
-      "page_socket": (context) =>  const SocketPage()
+      // "page_photo": (context) =>  const PermissionPhoto(),
+      // "page_contact": (context) =>  const FlutterContactsExample(),
+      // "page_socket": (context) =>  const SocketPage()
     },
-    home: Scaffold(
-      appBar: AppBar(title: const Text('FlutterDemo')),
-      body: const MyApp(),
-      bottomNavigationBar: const MyStatefulWidget()
-    )
+    home: MyStatefulWidget()
   ));
 }
 
@@ -73,22 +69,25 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final List _widgetOptions = [
-    'page_photo','page_contact','page_socket'
-    // const PermissionPhoto(),
-    // const FlutterContactsExample(),
+    // 'page_photo','page_contact','page_socket'
+    const PermissionPhoto(),
+    const FlutterContactsExample(),
     // const SocketPage()
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      Navigator.pushNamed(context, _widgetOptions[index]);
+      // Navigator.pushNamed(context, _widgetOptions[index]);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
+    return Scaffold(
+      appBar: AppBar(title: const Text('FlutterDemo')),
+      body: _widgetOptions[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -96,16 +95,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Business',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'School',
+            label: 'Settings',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
-      );
+      )
+    );
   }
 }
