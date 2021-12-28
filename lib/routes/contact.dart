@@ -49,10 +49,11 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(title: const Text('flutter_contacts_example')),
-          body: _body()));
+  // Widget build(BuildContext context) => MaterialApp(
+  //     home: Scaffold(
+  //         appBar: AppBar(title: const Text('flutter_contacts_example')),
+  //         body: _body()));
+  Widget build(BuildContext context) =>  _body();
 
   Widget _body() {
     // if (_permissionDenied) return const Center(child: Text('Permission denied'));
