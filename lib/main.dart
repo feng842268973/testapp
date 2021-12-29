@@ -3,8 +3,8 @@ import './routes/photo.dart';
 import './routes/contact.dart';
 import './routes/settings.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:web_socket_channel/status.dart' as status;
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   // runApp(const MyApp());
