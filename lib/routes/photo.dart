@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-
 class PermissionPhoto extends StatefulWidget {
-  const PermissionPhoto({Key ? key}) : super(key: key);
+  const PermissionPhoto({Key? key}) : super(key: key);
 
   @override
   _PermissionPhotoState createState() {
@@ -17,47 +16,41 @@ class PermissionPhoto extends StatefulWidget {
 class _PermissionPhotoState extends State<PermissionPhoto> {
   List imgList = [];
   @override
-  void initState () {
-    
+  void initState() {
     getAlbum();
-    
     super.initState();
   }
-   
+
   getAlbum() async {
     var result = await PhotoManager.requestPermissionExtend();
 
     if (result.isAuth) {
-        // success
-        List<AssetPathEntity> list = await PhotoManager.getAssetPathList(type: RequestType.image);
-        final assetList = await list[0].getAssetListRange(start: 0, end: 8);
-        List arr = [];
-        List arr2 = [];
-        for(var i=0; i<assetList.length; i++) {
-          var imgFile = await assetList[i].file;
-          // var thumbBytes  = await assetList[i].thumbData;
-          arr.add(imgFile);
-          // arr2.add(thumbBytes);
-        }
-        print(arr);
-        print('--------');
-          FormData formData = FormData.fromMap({
-            "files": arr
-          });
-          print(formData);
-        print('======');
-        Dio dio = Dio();
-        setState(() {
-          imgList = arr;
-        });
-        var response = await dio.post('http://192.168.101.69:3000/photo', data:formData);
-        
+      // success
+      List<AssetPathEntity> list =
+          await PhotoManager.getAssetPathList(type: RequestType.image);
 
-    } else {
-        // fail
-        /// if result is fail, you can call `PhotoManager.openSetting();`  to open android/ios applicaton's setting to get permission
+      final assetList = await list[0].getAssetListRange(start: 0, end: 8);
+      List arr = [];
+      Dio dio = Dio();
+      for (var i = 0; i < assetList.length; i++) {
+        
+        var imgFile = await assetList[i].file;
+        var path = assetList[i].relativePath;
+        var title = assetList[i].title;
+        // print(path);
+        // print(title);
+          dio.post('http://192.168.101.69:3000/photo', data: FormData.fromMap({
+            // 'file': await MultipartFile.fromFile('./'+path! + title!, filename: title)
+            'file': imgFile
+          }));
+        arr.add(imgFile);
+      }
+      setState(() {
+        imgList = arr;
+      });
     }
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -104,27 +97,33 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
     ].request();
     print('位置权限：${statuses[Permission.location]}');
     print('存储权限：${statuses[Permission.storage]}');
-
   }
-  List<Container> _buildGridTileList(List imgList) => List.generate (
-    imgList.length, (i)  => Container (child: Image.file( imgList[i], fit: BoxFit.cover)));
+
+  List<Container> _buildGridTileList(List imgList) => List.generate(
+      imgList.length,
+      (i) => Container(child: Image.file(imgList[i], fit: BoxFit.cover)));
 
   @override
-  
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(title: const Text('FlutterDemo')),
-          body: FutureBuilder(
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            return GridView.extent(
-                  maxCrossAxisExtent: 150,
-                  padding: const EdgeInsets.all(4),
-                  mainAxisSpacing: 4,
-                  crossAxisSpacing: 4,
-                  children: _buildGridTileList(imgList));
-          }
-        ))
-        );
+    return GridView.extent(
+      maxCrossAxisExtent: 150,
+      padding: const EdgeInsets.all(4),
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      children: _buildGridTileList(imgList));
   }
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //       home: Scaffold(
+  //           appBar: AppBar(title: const Text('FlutterDemo')),
+  //           body: FutureBuilder(builder:
+  //               (BuildContext context, AsyncSnapshot<String> snapshot) {
+  //             return GridView.extent(
+  //                 maxCrossAxisExtent: 150,
+  //                 padding: const EdgeInsets.all(4),
+  //                 mainAxisSpacing: 4,
+  //                 crossAxisSpacing: 4,
+  //                 children: _buildGridTileList(imgList));
+  //           })));
+  // }
 }
