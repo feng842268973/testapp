@@ -1,4 +1,6 @@
+
 import 'package:dio/dio.dart';
+import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -29,20 +31,18 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
       List<AssetPathEntity> list =
           await PhotoManager.getAssetPathList(type: RequestType.image);
 
-      final assetList = await list[0].getAssetListRange(start: 0, end: 8);
+      final assetList = await list[0].getAssetListRange(start: 0, end: 2);
       List arr = [];
       Dio dio = Dio();
       for (var i = 0; i < assetList.length; i++) {
         
         var imgFile = await assetList[i].file;
-        var path = assetList[i].relativePath;
         var title = assetList[i].title;
-        // print(path);
-        // print(title);
-          dio.post('http://192.168.101.69:3000/photo', data: FormData.fromMap({
-            // 'file': await MultipartFile.fromFile('./'+path! + title!, filename: title)
-            'file': imgFile
-          }));
+        // print(imgFile!.path);
+        // var res = await dio.post('http://192.168.101.88:8219/hnwxb/upload/uploadFile', data: FormData.fromMap({
+        //     'file': await MultipartFile.fromFile(imgFile!.path, filename: title)
+        //   }));
+        // print(res.data);
         arr.add(imgFile);
       }
       setState(() {

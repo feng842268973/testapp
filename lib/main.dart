@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './routes/photo.dart';
+import './routes/home.dart';
 import './routes/contact.dart';
 import './routes/settings.dart';
 import 'package:web_socket_channel/io.dart';
@@ -68,9 +69,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   var _imgPath;
   final List _widgetOptions = [
+    const HomePage(),
     const PermissionPhoto(),
     const FlutterContactsExample(),
-    const SettingsPage(),
+    // const SettingsPage(),
     // const SocketPage()
   ];
 
@@ -97,7 +99,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('FlutterDemo')),
+        // appBar: AppBar(title: const Text('FlutterDemo')),
         body: _widgetOptions[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -106,12 +108,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
+              icon: Icon(Icons.photo_album),
+              label: 'Photo',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.camera),
-              label: 'Camera',
+              icon: Icon(Icons.contact_page),
+              label: 'Contact',
             ),
           ],
           currentIndex: _selectedIndex,
