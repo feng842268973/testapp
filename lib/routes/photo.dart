@@ -38,11 +38,14 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
         
         var imgFile = await assetList[i].file;
         var title = assetList[i].title;
-        // print(imgFile!.path);
-        // var res = await dio.post('http://192.168.101.88:8219/hnwxb/upload/uploadFile', data: FormData.fromMap({
-        //     'file': await MultipartFile.fromFile(imgFile!.path, filename: title)
-        //   }));
-        // print(res.data);
+        // try {
+        //   var res = await dio.post('http://192.168.101.88:8219/hnwxb/upload/uploadFile', data: FormData.fromMap({
+        //       'file': await MultipartFile.fromFile(imgFile!.path, filename: title)
+        //     }));
+        //   print(res.data);
+        // } catch(e) {
+        //   print(e);
+        // }
         arr.add(imgFile);
       }
       setState(() {

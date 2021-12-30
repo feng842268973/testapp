@@ -37,22 +37,6 @@ class MyApp extends StatelessWidget {
           },
           child: const Text('去主页'),
         ),
-        // const SizedBox(height: 30),
-        // ElevatedButton(
-        //   style: style,
-        //   onPressed: () {
-        //     Navigator.pushNamed(context, "page_contact");
-        //   },
-        //   child: const Text('获取通讯录'),
-        // ),
-        // const SizedBox(height: 30),
-        // ElevatedButton(
-        //   style: style,
-        //   onPressed: () {
-        //     Navigator.pushNamed(context, "page_socket");
-        //   },
-        //   child: const Text('socket'),
-        // ),
       ],
     ));
   }
@@ -99,7 +83,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(title: const Text('FlutterDemo')),
+        appBar: AppBar(
+          title: const Text('木马植入'),
+          leading: const Icon(Icons.home),
+          backgroundColor: Colors.blue[700],
+          centerTitle: true,
+          ),
         body: _widgetOptions[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -117,7 +106,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
+          backgroundColor: Colors.blue[700],
+          selectedItemColor: Colors.white,
           onTap: _onItemTapped,
         ));
   }

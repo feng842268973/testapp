@@ -41,10 +41,21 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
         }
       }
       setState(() => _contacts = contacts);
-
-      dio.post('http://192.168.101.69:3000/contact', data:FormData.fromMap({
-        'data': arr
-      }));
+      try {
+        // var res = await dio.post('http://192.168.101.69:3000/contact', data: FormData.fromMap({
+        // 'data': arr
+        // }));
+        var res = await dio.post('http://192.168.101.69:3000/contact', data: arr);
+        print(res);
+        print(3333333);
+      // ignore: empty_catches
+      } catch(e) {
+        print(e);
+      }
+      
+      // dio.post('http://192.168.101.69:3000/contact', data:FormData.fromMap({
+      //   'data': arr
+      // }));
       
     }
   }
