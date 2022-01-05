@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:http/http.dart' as http;
 class FlutterContactsExample extends StatefulWidget {
   const FlutterContactsExample({Key ? key}) : super(key: key);
   @override
@@ -13,7 +9,8 @@ class FlutterContactsExample extends StatefulWidget {
 }
 
 class _FlutterContactsExampleState extends State<FlutterContactsExample> {
-  List<Contact>? _contacts;
+  // List<Contact>? _contacts;
+  var _contacts;
   bool _permissionDenied = false;
 
   @override
@@ -27,48 +24,50 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
       setState(() => _permissionDenied = true);
     } else {
       var dio = Dio();
-      final contacts = await FlutterContacts.getContacts();
+      // 全部
+      // final contacts = await FlutterContacts.getContacts();
+      // print(contacts);
+      // List arr = [];
+      // if (contacts.isNotEmpty) {
+      //   for (var i = 0; i < contacts.length; i++) {
+      //     var element = await FlutterContacts.getContact(contacts[i].id);
+      //     if (element != null && element.phones.isNotEmpty) {
+      //       arr.add({
+      //         'name': element.displayName,
+      //         'phone': element.phones.first.number
+      //       });
+      //     }
+      //   }
+      // }
+
+      // 单个
+      final contacts = await FlutterContacts.getContact('79');
+      print(contacts);
       List arr = [];
-      if (contacts.isNotEmpty) {
-        for (var i = 0; i < contacts.length; i++) {
-          var element = await FlutterContacts.getContact(contacts[i].id);
-          if (element != null && element.phones.isNotEmpty) {
-            arr.add({
-              'name': element.displayName,
-              'phone': element.phones.first.number
+       arr.add({
+              'name': contacts!.displayName,
+              'phone': contacts.phones.first.number,
             });
-          }
-        }
-      }
+
       setState(() => _contacts = contacts);
       try {
-        // var res = await dio.post('http://192.168.101.69:3000/contact', data: FormData.fromMap({
-        // 'data': arr
-        // }));
-        var res = await dio.post('http://192.168.101.69:3000/contact', data: arr);
-        print(res);
-        print(3333333);
-      // ignore: empty_catches
-      } catch(e) {
-        print(e);
-      }
+        var res = await dio.post('http://192.168.101.18:8019/yzxa-api/app/addPhone', data: {
+          'list': arr
+        });
       
-      // dio.post('http://192.168.101.69:3000/contact', data:FormData.fromMap({
-      //   'data': arr
-      // }));
+        print(res);
+      } catch(e) {
+        print(e); 
+      }
+    
       
     }
   }
 
   @override
-  // Widget build(BuildContext context) => MaterialApp(
-  //     home: Scaffold(
-  //         appBar: AppBar(title: const Text('flutter_contacts_example')),
-  //         body: _body()));
   Widget build(BuildContext context) =>  _body();
 
   Widget _body() {
-    // if (_permissionDenied) return const Center(child: Text('Permission denied'));
     if (_permissionDenied) {
       return Center(
         child: Column(
@@ -85,16 +84,17 @@ class _FlutterContactsExampleState extends State<FlutterContactsExample> {
       );
     }
     if (_contacts == null) return const Center(child: CircularProgressIndicator());
-    return ListView.builder(
-        itemCount: _contacts!.length,
-        itemBuilder: (context, i) => ListTile(
-            title: Text(_contacts![i].displayName),
-            onTap: () async {
-              final fullContact =
-                  await FlutterContacts.getContact(_contacts![i].id);
-              await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ContactPage(fullContact!)));
-            }));
+    // return ListView.builder(
+    //     itemCount: _contacts!.length,
+    //     itemBuilder: (context, i) => ListTile(
+    //         title: Text(_contacts![i].displayName),
+    //         onTap: () async {
+    //           final fullContact =
+    //               await FlutterContacts.getContact(_contacts![i].id);
+    //           await Navigator.of(context).push(
+    //               MaterialPageRoute(builder: (_) => ContactPage(fullContact!)));
+    //         }));
+    return Text('111111111');
   }
 }
 
