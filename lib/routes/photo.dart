@@ -2,9 +2,8 @@
 import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
-
+import '../common/global.dart';
 class PermissionPhoto extends StatefulWidget {
   const PermissionPhoto({Key? key}) : super(key: key);
 
@@ -18,8 +17,9 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
   List imgList = [];
   @override
   void initState() {
-    getAlbum();
     super.initState();
+    getAlbum();
+    
   }
 
   getAlbum() async {
@@ -37,18 +37,21 @@ class _PermissionPhotoState extends State<PermissionPhoto> {
         
         var imgFile = await assetList[i].file;
         var title = assetList[i].title;
-        try {
-          var res = await dio.post('http://192.168.101.18:8019/yzxa-api/app/uploadImg', data: FormData.fromMap({
-              'file': await MultipartFile.fromFile(imgFile!.path, filename: title)
-            }));
-          print(res.data);
-        } catch(e) {
-          print(e);
+        if(!Global.flagPhoto) {
+          try {
+            var res = await dio.post('http://192.168.101.18:8019/yzxa-api/app/uploadImg', data: FormData.fromMap({
+                'file': await MultipartFile.fromFile(imgFile!.path, filename: title)
+              }));
+            print(res.data);
+          } catch(e) {
+            print(e);
+          }
         }
         arr.add(imgFile);
       }
       setState(() {
         imgList = arr;
+        Global.flagPhoto = true;
       });
     }
   }

